@@ -1,0 +1,169 @@
+<%- include('../layouts/main', { title: 'User Dashboard' }) %>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Dashboard Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Welcome, <%= user.nama %></h1>
+        <p class="text-gray-600">Manage your tool borrowings and view available items</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Active Borrows -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <i class="fas fa-hand-holding text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Active Borrows</p>
+                    <p class="text-2xl font-semibold text-gray-900"><%= activeBorrows.length %></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Racks -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                    <i class="fas fa-warehouse text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Available Racks</p>
+                    <p class="text-2xl font-semibold text-gray-900"><%= racks.length %></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Store Map -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <a href="/user/map" class="flex items-center hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                    <i class="fas fa-map text-2xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">Store Map</p>
+                    <p class="text-lg font-semibold text-gray-900">View Layout</p>
+                </div>
+                <div class="ml-auto">
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Active Borrows Section -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">Your Active Borrows</h2>
+        </div>
+        <div class="p-6">
+            <% if (activeBorrows.length > 0) { %>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Name</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size/Type</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Borrow Date</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% activeBorrows.forEach(borrow => { %>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= borrow.item.name %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= borrow.item.size %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <%= new Date(borrow.borrowDate).toLocaleDateString() %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            <%= borrow.status %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="text-center py-4 text-gray-500">
+                    <p>You don't have any active borrows</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Available Racks Section -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">Available Racks</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <% racks.forEach(rackId => { %>
+                    <a href="/user/racks/<%= rackId %>" 
+                       class="block p-6 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-box text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Rack <%= rackId %></h3>
+                                <p class="text-sm text-gray-600">View available items</p>
+                            </div>
+                            <div class="ml-auto">
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+                    </a>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh active borrows every 30 seconds
+setInterval(async () => {
+    try {
+        const response = await fetch('/user/borrows/active');
+        const borrows = await response.json();
+        updateBorrowsTable(borrows);
+    } catch (error) {
+        console.error('Error fetching active borrows:', error);
+    }
+}, 30000);
+
+function updateBorrowsTable(borrows) {
+    const tbody = document.querySelector('table tbody');
+    if (!tbody) return;
+
+    if (borrows.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center py-4 text-gray-500">
+                    You don't have any active borrows
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = borrows.map(borrow => `
+        <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${borrow.item.name}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${borrow.item.size}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${new Date(borrow.borrowDate).toLocaleDateString()}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    ${borrow.status}
+                </span>
+            </td>
+        </tr>
+    `).join('');
+}
+</script>
