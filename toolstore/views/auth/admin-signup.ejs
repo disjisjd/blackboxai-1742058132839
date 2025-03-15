@@ -1,0 +1,61 @@
+<%- include('../layouts/main', { title: 'Admin Sign Up' }) %>
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Create Admin Account
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Note: Only one admin account can be created
+            </p>
+        </div>
+        <form class="mt-8 space-y-6" action="/auth/admin/signup" method="POST">
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    <label for="username" class="sr-only">Username</label>
+                    <input id="username" name="username" type="text" required value="TSABPNJ"
+                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                        placeholder="Username (TSABPNJ)" readonly>
+                </div>
+                <div>
+                    <label for="password" class="sr-only">Password</label>
+                    <input id="password" name="password" type="password" required value="toolstorepastibisa1"
+                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                        placeholder="Password" readonly>
+                </div>
+                <div>
+                    <label for="nim" class="sr-only">NIM</label>
+                    <input id="nim" name="nim" type="text" required value="20001"
+                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                        placeholder="NIM (20001)" readonly>
+                </div>
+                <div>
+                    <label for="yearOfEnrollment" class="sr-only">Year of Enrollment</label>
+                    <input id="yearOfEnrollment" name="yearOfEnrollment" type="number" required value="2001"
+                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                        placeholder="Year of Enrollment (2001)" readonly>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" 
+                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fas fa-user-plus"></i>
+                    </span>
+                    Create Admin Account
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <p class="mt-2 text-sm text-gray-600">
+                Already have an account? 
+                <a href="/auth/admin/login" class="font-medium text-blue-600 hover:text-blue-500">
+                    Login here
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
