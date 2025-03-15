@@ -1,0 +1,125 @@
+<%- include('../layouts/main', { title: 'Rack Items' }) %>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Page Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Rack <%= rackId %></h1>
+            <p class="text-gray-600">View and borrow items from this rack</p>
+        </div>
+        <a href="/user/racks" class="text-blue-600 hover:text-blue-800">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Racks
+        </a>
+    </div>
+
+    <!-- Items Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% items.forEach(item => { %>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900"><%= item.name %></h3>
+                        <span class="<%= item.status === 'available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> px-2 py-1 rounded-full text-xs font-semibold">
+                            <%= item.status === 'available' ? 'Available' : 'Out of Stock' %>
+                        </span>
+                    </div>
+
+                    <div class="space-y-2 mb-6">
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-ruler-combined w-5 mr-2"></i>
+                            <span>Size: <%= item.size %></span>
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-cubes w-5 mr-2"></i>
+                            <span>Stock: <%= item.stock %></span>
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-warehouse w-5 mr-2"></i>
+                            <span>Rack: <%= item.rackId %></span>
+                        </div>
+                    </div>
+
+                    <% if (item.canBorrow) { %>
+                        <form action="/user/items/<%= item._id %>/borrow" method="POST" class="mt-4">
+                            <button type="submit" 
+                                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
+                                    onclick="return confirm('Are you sure you want to borrow this item?')">
+                                <i class="fas fa-hand-holding mr-2"></i>
+                                Borrow Item
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <div class="mt-4">
+                            <button disabled 
+                                    class="w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-md cursor-not-allowed flex items-center justify-center">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                <%= item.stock === 0 ? 'Out of Stock' : 'Already Borrowed' %>
+                            </button>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <!-- No Items Message -->
+    <% if (items.length === 0) { %>
+        <div class="text-center py-12">
+            <div class="bg-gray-50 rounded-lg p-8 inline-block">
+                <i class="fas fa-box-open text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-500">No items found in this rack</p>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<!-- Success/Error Toast Notifications -->
+<div id="toast" class="fixed bottom-4 right-4 transform transition-transform duration-300 translate-y-full">
+    <div class="bg-white rounded-lg shadow-lg p-4 max-w-md">
+        <div id="toastContent" class="flex items-center">
+            <!-- Content will be dynamically inserted -->
+        </div>
+    </div>
+</div>
+
+<script>
+// Function to show toast notification
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastContent = document.getElementById('toastContent');
+    
+    // Set content based on type
+    if (type === 'success') {
+        toastContent.innerHTML = `
+            <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
+            <p class="text-gray-800">${message}</p>
+        `;
+    } else {
+        toastContent.innerHTML = `
+            <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
+            <p class="text-gray-800">${message}</p>
+        `;
+    }
+    
+    // Show toast
+    toast.classList.remove('translate-y-full');
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-y-full');
+    }, 3000);
+}
+
+// Show toast for flash messages if they exist
+document.addEventListener('DOMContentLoaded', function() {
+    const successMsg = '<%= locals.success_msg %>';
+    const errorMsg = '<%= locals.error_msg %>';
+    
+    if (successMsg) {
+        showToast(successMsg, 'success');
+    }
+    if (errorMsg) {
+        showToast(errorMsg, 'error');
+    }
+});
+</script>
